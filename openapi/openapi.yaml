@@ -1,0 +1,184 @@
+openapi: 3.0.3
+info:
+  title: MedOrbit Gateway API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /v1/session/run:
+    post:
+      summary: Run a session through the orchestrator
+      description: Requires an HS256 JWT signed with the gateway secret. The token must include `sub` or `user_id`, `tenant_id`, `roles`, and `exp`; `roles` must include `doctor`.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunSessionRequest'
+      responses:
+        '200':
+          description: Session response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunSessionResponse'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid bearer token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Authenticated user lacks the required role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Gateway or runtime failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/session/replay:
+    post:
+      summary: Replay a session audit trail
+      description: Requires an HS256 JWT signed with the gateway secret. The token must include `sub` or `user_id`, `tenant_id`, `roles`, and `exp`; `roles` must include `doctor`. Replay is scoped to sessions audited under the same `tenant_id`, so cross-tenant session IDs return `403`.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplayRequest'
+      responses:
+        '200':
+          description: Replay response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplayResponse'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid bearer token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Authenticated user lacks the required role, or the requested session belongs to another tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Gateway, audit store, or runtime failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: HS256 JWT signed with `DDI_JWT_SECRET`. Required claims are `sub` or `user_id`, `tenant_id`, `roles`, and `exp`; protected routes require the `doctor` role.
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    RunSessionRequest:
+      type: object
+      required: [session_id, user_id, input_text]
+      properties:
+        session_id:
+          type: string
+        user_id:
+          type: string
+        locale:
+          type: string
+        input_text:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    Evidence:
+      type: object
+      properties:
+        source:
+          type: string
+        uri:
+          type: string
+        title:
+          type: string
+        snippet:
+          type: string
+        region:
+          type: string
+        version:
+          type: string
+        published_at:
+          type: string
+    Claim:
+      type: object
+      properties:
+        text:
+          type: string
+        evidence:
+          type: array
+          items:
+            $ref: '#/components/schemas/Evidence'
+        degraded:
+          type: boolean
+    RunSessionResponse:
+      type: object
+      properties:
+        session_id:
+          type: string
+        claims:
+          type: array
+          items:
+            $ref: '#/components/schemas/Claim'
+        draft:
+          type: string
+        risk_level:
+          type: string
+        followups:
+          type: array
+          items:
+            type: string
+    ReplayRequest:
+      type: object
+      required: [session_id]
+      properties:
+        session_id:
+          type: string
+    ReplayResponse:
+      type: object
+      properties:
+        session_id:
+          type: string
+        events:
+          description: Audit event strings prefixed with event type, such as gateway.request, gateway.response, runtime.request, and runtime.response.
+          type: array
+          items:
+            type: string

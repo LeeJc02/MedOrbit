@@ -1,0 +1,111 @@
+[
+  {
+    "evidence_id": "fixture://rag1/fever-red-flags",
+    "rag_name": "RAG1",
+    "source": "RAG1",
+    "uri": "fixture://rag1/fever-red-flags",
+    "title": "儿童发热皮疹分诊红旗",
+    "snippet": "儿童发热伴皮疹需要评估精神状态、持续高热、出血点和脱水等风险信号。",
+    "region": "CN",
+    "version": "fixture-2026-05",
+    "published_at": "2026-05-03",
+    "terms": ["发热", "皮疹", "儿童"]
+  },
+  {
+    "evidence_id": "fixture://rag2/fever-rash-differential",
+    "rag_name": "RAG2",
+    "source": "RAG2",
+    "uri": "fixture://rag2/fever-rash-differential",
+    "title": "发热伴皮疹鉴别提示",
+    "snippet": "发热伴皮疹可见于感染、药物反应和免疫相关疾病，需要结合病程与暴露史判断。",
+    "region": "CN",
+    "version": "fixture-2026-05",
+    "published_at": "2026-05-03",
+    "terms": ["发热", "皮疹"]
+  },
+  {
+    "evidence_id": "fixture://rag3/ibuprofen-safety",
+    "rag_name": "RAG3",
+    "source": "RAG3",
+    "uri": "fixture://rag3/ibuprofen-safety",
+    "title": "布洛芬用药安全核对",
+    "snippet": "使用布洛芬前需要核对年龄、剂量、脱水、胃肠道出血风险和合并用药。",
+    "region": "CN",
+    "version": "fixture-2026-05",
+    "published_at": "2026-05-03",
+    "terms": ["布洛芬", "发热"]
+  },
+  {
+    "evidence_id": "fixture://rag1/bleeding-risk",
+    "rag_name": "RAG1",
+    "source": "RAG1",
+    "uri": "fixture://rag1/bleeding-risk",
+    "title": "抗凝患者出血风险分诊",
+    "snippet": "抗凝患者合并出血表现、跌倒外伤或多药联用时需要优先评估出血风险。",
+    "region": "CN",
+    "version": "fixture-2026-05",
+    "published_at": "2026-05-03",
+    "terms": ["华法林", "阿司匹林", "出血"]
+  },
+  {
+    "evidence_id": "fixture://rag2/anticoagulation-review",
+    "rag_name": "RAG2",
+    "source": "RAG2",
+    "uri": "fixture://rag2/anticoagulation-review",
+    "title": "房颤抗凝方案复核",
+    "snippet": "房颤患者抗凝和抗血小板联合使用需要结合适应证、出血风险和监测结果复核。",
+    "region": "CN",
+    "version": "fixture-2026-05",
+    "published_at": "2026-05-03",
+    "terms": ["房颤", "华法林", "阿司匹林"]
+  },
+  {
+    "evidence_id": "fixture://rag3/warfarin-aspirin-interaction",
+    "rag_name": "RAG3",
+    "source": "RAG3",
+    "uri": "fixture://rag3/warfarin-aspirin-interaction",
+    "title": "华法林与阿司匹林相互作用",
+    "snippet": "华法林与阿司匹林联用可增加出血风险，需要明确适应证并监测凝血和出血表现。",
+    "region": "CN",
+    "version": "fixture-2026-05",
+    "published_at": "2026-05-03",
+    "terms": ["华法林", "阿司匹林"]
+  },
+  {
+    "evidence_id": "fixture://rag1/pregnancy-hypertension-red-flags",
+    "rag_name": "RAG1",
+    "source": "RAG1",
+    "uri": "fixture://rag1/pregnancy-hypertension-red-flags",
+    "title": "妊娠期头痛血压升高红旗",
+    "snippet": "孕期头痛伴血压升高需要关注子痫前期等风险，并及时评估血压和伴随症状。",
+    "region": "CN",
+    "version": "fixture-2026-05",
+    "published_at": "2026-05-03",
+    "terms": ["孕妇", "头痛", "血压升高"]
+  },
+  {
+    "evidence_id": "fixture://rag2/headache-differential",
+    "rag_name": "RAG2",
+    "source": "RAG2",
+    "uri": "fixture://rag2/headache-differential",
+    "title": "头痛鉴别信息收集",
+    "snippet": "头痛评估需要询问起病方式、神经系统症状、血压、妊娠状态和用药史。",
+    "region": "CN",
+    "version": "fixture-2026-05",
+    "published_at": "2026-05-03",
+    "terms": ["头痛", "血压升高", "孕妇"]
+  },
+  {
+    "evidence_id": "fixture://rag3/pregnancy-medication-safety",
+    "rag_name": "RAG3",
+    "source": "RAG3",
+    "uri": "fixture://rag3/pregnancy-medication-safety",
+    "title": "妊娠期用药安全核对",
+    "snippet": "妊娠期用药需要核对孕周、药物禁忌、既往疾病和需要转诊评估的风险信号。",
+    "region": "CN",
+    "version": "fixture-2026-05",
+    "published_at": "2026-05-03",
+    "terms": ["孕妇", "服药"]
+  }
+]
+

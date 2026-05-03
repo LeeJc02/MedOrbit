@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MedOrbit Clinical Triage</title>
+    <link rel="icon" href="/assets/favicon.ico" sizes="any" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="bg-orbit"></div>
+    <header class="topbar">
+      <div>
+        <div class="brand-lockup">
+          <img src="/assets/logo.png" alt="MedOrbit logo" />
+          <p class="brand">MedOrbit</p>
+        </div>
+        <h1>药物相互作用与临床问答演示</h1>
+        <p class="subtitle">多 RAG 与强制引用可视化演示面板</p>
+      </div>
+      <div class="top-actions">
+        <a class="ghost" href="/docs" target="_blank">OpenAPI 文档</a>
+        <button id="seedBtn" class="ghost" type="button">填充示例</button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="panel">
+        <h2>输入请求</h2>
+        <label class="field">
+          <span>Session ID</span>
+          <input id="sessionId" placeholder="例如 s1" value="s1" />
+        </label>
+        <label class="field">
+          <span>User ID</span>
+          <input id="userId" placeholder="例如 u1" value="u1" />
+        </label>
+        <label class="field">
+          <span>Locale</span>
+          <input id="locale" placeholder="例如 zh-CN" value="zh-CN" />
+        </label>
+        <label class="field">
+          <span>症状描述</span>
+          <textarea
+            id="inputText"
+            rows="6"
+            placeholder="请描述症状、用药史、时间等"
+          >头痛并伴有恶心</textarea>
+        </label>
+        <label class="field">
+          <span>Metadata (JSON)</span>
+          <textarea id="metadata" rows="3">{"channel":"ui"}</textarea>
+        </label>
+
+        <div class="actions">
+          <button id="runBtn" class="primary" type="button">Run Session</button>
+          <button id="replayBtn" class="ghost" type="button">Replay Audit</button>
+        </div>
+        <p class="hint" id="status">等待提交</p>
+      </section>
+
+      <section class="panel">
+        <h2>风险概览</h2>
+        <div class="risk" id="riskLevel">
+          <span class="label">Risk Level</span>
+          <span class="value">UNKNOWN</span>
+        </div>
+        <div class="draft" id="draft">暂无草稿</div>
+
+        <h3>跟进问题</h3>
+        <ul class="list" id="followups"></ul>
+
+        <h3>结论与证据</h3>
+        <div id="claims"></div>
+      </section>
+
+      <section class="panel">
+        <h2>审计回放</h2>
+        <p class="hint">展示当前 Session 的审计事件。</p>
+        <div class="audit" id="audit"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>MedOrbit Demo UI · Go + Python Runtime · 强制引用视图</p>
+    </footer>
+
+    <script src="/app.js?v=20260503"></script>
+  </body>
+</html>

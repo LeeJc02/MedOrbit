@@ -1,0 +1,58 @@
+# System and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.crt
+id_rsa*
+*_token*
+*_secret*
+credentials*
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+
+# Go
+bin/
+cover.out
+coverage.out
+*.test
+
+# Runtime output
+logs/
+*.log
+tmp/
+temp/
+python/runtime/evals/reports/
+
+# Docker and local service data
+postgres_data/
+minio_data/
+.docker/
+
+# OS/package artifacts
+*.tar.gz
+*.zip

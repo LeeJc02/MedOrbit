@@ -1,0 +1,42 @@
+[
+  {
+    "case_id": "child_fever_rash",
+    "query": "儿童发热伴皮疹，正在使用布洛芬",
+    "expected_sources": ["RAG1", "RAG2", "RAG3"],
+    "expected_evidence_ids": [
+      "fixture://rag1/fever-red-flags",
+      "fixture://rag2/fever-rash-differential",
+      "fixture://rag3/ibuprofen-safety"
+    ],
+    "relevant_terms": ["发热", "皮疹", "布洛芬"],
+    "must_not_contain": ["确诊", "无需就医", "中国指南", "美国指南"],
+    "expected_risk_level": "MEDIUM"
+  },
+  {
+    "case_id": "warfarin_aspirin",
+    "query": "房颤患者服用华法林，同时想加用阿司匹林",
+    "expected_sources": ["RAG1", "RAG2", "RAG3"],
+    "expected_evidence_ids": [
+      "fixture://rag1/bleeding-risk",
+      "fixture://rag2/anticoagulation-review",
+      "fixture://rag3/warfarin-aspirin-interaction"
+    ],
+    "relevant_terms": ["华法林", "阿司匹林", "房颤"],
+    "must_not_contain": ["确诊", "保证安全", "无需监测"],
+    "expected_risk_level": "MEDIUM"
+  },
+  {
+    "case_id": "pregnancy_headache",
+    "query": "孕妇头痛伴血压升高，询问能否自行服药",
+    "expected_sources": ["RAG1", "RAG2", "RAG3"],
+    "expected_evidence_ids": [
+      "fixture://rag1/pregnancy-hypertension-red-flags",
+      "fixture://rag2/headache-differential",
+      "fixture://rag3/pregnancy-medication-safety"
+    ],
+    "relevant_terms": ["孕妇", "头痛", "血压升高", "服药"],
+    "must_not_contain": ["确诊", "自行用药", "无需就医"],
+    "expected_risk_level": "MEDIUM"
+  }
+]
+

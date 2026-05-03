@@ -1,0 +1,6 @@
+grpcio==1.63.0
+grpcio-health-checking==1.63.0
+grpcio-tools==1.63.0
+pydantic==2.7.4
+psycopg2-binary==2.9.9
+pymilvus==2.4.3

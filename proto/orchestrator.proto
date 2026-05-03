@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package ddi.orchestrator.v1;
+
+option go_package = "ddi/gen;orchestratorpb";
+
+message Evidence {
+  string source = 1;
+  string uri = 2;
+  string title = 3;
+  string snippet = 4;
+  string region = 5;
+  string version = 6;
+  string published_at = 7;
+}
+
+message Claim {
+  string text = 1;
+  repeated Evidence evidence = 2;
+  bool degraded = 3;
+}
+
+message RunSessionRequest {
+  string session_id = 1;
+  string user_id = 2;
+  string locale = 3;
+  string input_text = 4;
+  map<string,string> metadata = 5;
+}
+
+message RunSessionResponse {
+  string session_id = 1;
+  repeated Claim claims = 2;
+  string draft = 3;
+  string risk_level = 4;
+  repeated string followups = 5;
+}
+
+message ReplayRequest {
+  string session_id = 1;
+}
+
+message ReplayResponse {
+  string session_id = 1;
+  repeated string events = 2;
+}
+
+service Orchestrator {
+  rpc RunSession(RunSessionRequest) returns (RunSessionResponse);
+  rpc Replay(ReplayRequest) returns (ReplayResponse);
+}

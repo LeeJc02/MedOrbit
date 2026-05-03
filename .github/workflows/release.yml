@@ -1,0 +1,115 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23.x"
+          cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: python/runtime/requirements.txt
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r python/runtime/requirements.txt pytest
+
+      - name: Go tests
+        run: go test ./...
+
+      - name: Python tests
+        run: python -m pytest python/runtime/tests -q
+
+      - name: Offline agent eval
+        run: python -m evals.run_agent_eval --mode offline --fail-on-threshold
+
+      - name: Start Docker Compose dependencies
+        run: docker compose up -d postgres etcd minio milvus
+
+      - name: Integration agent eval
+        env:
+          DDI_EVAL_INTEGRATION: "1"
+        run: python -m evals.run_agent_eval --mode integration --fail-on-threshold
+
+      - name: End-to-end smoke
+        env:
+          DDI_PYTHON_CMD: python
+        run: ./scripts/e2e_smoke.sh
+
+      - name: Stop Docker Compose dependencies
+        if: always()
+        run: docker compose down -v
+
+      - name: Build gateway binaries
+        run: |
+          mkdir -p dist
+          for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64; do
+            os="${target%/*}"
+            arch="${target#*/}"
+            name="medorbit-gateway-${os}-${arch}"
+            GOOS="$os" GOARCH="$arch" CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "dist/${name}" ./cmd/gateway
+            tar -czf "dist/${name}.tar.gz" -C dist "${name}"
+            rm "dist/${name}"
+          done
+
+      - name: Set image names
+        run: |
+          owner_lc="${GITHUB_REPOSITORY_OWNER,,}"
+          echo "GATEWAY_IMAGE=ghcr.io/${owner_lc}/medorbit-gateway" >> "$GITHUB_ENV"
+          echo "RUNTIME_IMAGE=ghcr.io/${owner_lc}/medorbit-runtime" >> "$GITHUB_ENV"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push gateway image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/gateway.Dockerfile
+          push: true
+          tags: |
+            ${{ env.GATEWAY_IMAGE }}:${{ github.ref_name }}
+            ${{ env.GATEWAY_IMAGE }}:latest
+
+      - name: Build and push runtime image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/runtime.Dockerfile
+          push: true
+          tags: |
+            ${{ env.RUNTIME_IMAGE }}:${{ github.ref_name }}
+            ${{ env.RUNTIME_IMAGE }}:latest
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.tar.gz
