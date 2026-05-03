@@ -48,6 +48,21 @@ MedOrbit 是一个面向药物相互作用分诊和用药安全流程的工程�
 - `runtime`：Python gRPC 服务，负责检索、agent graph、证据约束、runtime 审计事件和健康检查
 - `docker-compose.yml`：本地 Postgres、etcd、MinIO、Milvus 依赖栈
 
+### 项目架构
+
+```mermaid
+flowchart LR
+  client["Browser or curl"] --> gatewaySvc["Go gateway"]
+  gatewaySvc --> webUi["Demo UI and Swagger UI"]
+  gatewaySvc --> authLayer["JWT and doctor RBAC"]
+  authLayer --> auditDb["Postgres audit log"]
+  authLayer --> runtimeSvc["Python gRPC runtime"]
+  runtimeSvc --> agentRuntime["Agent runtime"]
+  agentRuntime --> fixtureStore["Fixture evidence"]
+  agentRuntime --> vectorIndex["Milvus eval index"]
+  runtimeSvc --> runtimeAudit["Runtime audit events"]
+```
+
 ### 数据和状态
 
 - `Postgres`：持久化 gateway 审计日志，也是同租户 replay 的数据源
@@ -62,6 +77,21 @@ MedOrbit 是一个面向药物相互作用分诊和用药安全流程的工程�
 3. Gateway 写入 `gateway.request`，通过 gRPC 调用 Python runtime，然后写入 `gateway.response`。
 4. Runtime 检索证据、构建 claims、执行引用约束，并返回结构化响应。
 5. `POST /v1/session/replay` 读取同租户审计事件。
+
+### 项目流程
+
+```mermaid
+flowchart TD
+  start["Client submits session request"] --> validate["Gateway validates JWT and role"]
+  validate --> writeRequest["Write gateway request audit"]
+  writeRequest --> callRuntime["Call runtime RunSession"]
+  callRuntime --> buildResponse["Runtime builds evidence-backed response"]
+  buildResponse --> writeResponse["Write gateway response audit"]
+  writeResponse --> returnSession["Return session response"]
+  returnSession --> replayRequest["Client requests replay"]
+  replayRequest --> tenantCheck["Gateway checks tenant scope"]
+  tenantCheck --> replayEvents["Return audit replay events"]
+```
 
 ## Agent Runtime
 

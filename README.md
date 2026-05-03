@@ -49,6 +49,21 @@ This project focuses on the parts that make clinical agent systems interesting:
 - `runtime`: Python gRPC service for retrieval, agent graph execution, evidence enforcement, runtime audit events, and health checks
 - `docker-compose.yml`: local dependency stack for Postgres, etcd, MinIO, and Milvus
 
+### Project architecture
+
+```mermaid
+flowchart LR
+  client["Browser or curl"] --> gatewaySvc["Go gateway"]
+  gatewaySvc --> webUi["Demo UI and Swagger UI"]
+  gatewaySvc --> authLayer["JWT and doctor RBAC"]
+  authLayer --> auditDb["Postgres audit log"]
+  authLayer --> runtimeSvc["Python gRPC runtime"]
+  runtimeSvc --> agentRuntime["Agent runtime"]
+  agentRuntime --> fixtureStore["Fixture evidence"]
+  agentRuntime --> vectorIndex["Milvus eval index"]
+  runtimeSvc --> runtimeAudit["Runtime audit events"]
+```
+
 ### Data and state
 
 - `Postgres`: durable gateway audit log and tenant-scoped replay source
@@ -63,6 +78,21 @@ This project focuses on the parts that make clinical agent systems interesting:
 3. The gateway writes `gateway.request`, calls the Python runtime over gRPC, then writes `gateway.response`.
 4. The runtime retrieves evidence, builds claims, enforces citations, and returns a structured response.
 5. `POST /v1/session/replay` reads same-tenant audit events for replay.
+
+### Project flow
+
+```mermaid
+flowchart TD
+  start["Client submits session request"] --> validate["Gateway validates JWT and role"]
+  validate --> writeRequest["Write gateway request audit"]
+  writeRequest --> callRuntime["Call runtime RunSession"]
+  callRuntime --> buildResponse["Runtime builds evidence-backed response"]
+  buildResponse --> writeResponse["Write gateway response audit"]
+  writeResponse --> returnSession["Return session response"]
+  returnSession --> replayRequest["Client requests replay"]
+  replayRequest --> tenantCheck["Gateway checks tenant scope"]
+  tenantCheck --> replayEvents["Return audit replay events"]
+```
 
 ## Agent Runtime
 
